@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Registration extends Model
 {
-    protected $fillabe =[
+    protected $fillable = [
         'student_id',
         'course_id',
         'semester',
-        
     ];
+
     public function student()
     {
         return $this->belongsTo(Student::class);

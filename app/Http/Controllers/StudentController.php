@@ -8,6 +8,26 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 class StudentController extends Controller
 {
+
+public function showRegistrations($studentId)
+{
+    $user = auth()->user();
+
+    // If the logged-in user is a Student, ensure they can only view their own record
+    if ($user->hasRole('Student') && $user->id !== (int) $studentId) {
+        abort(403, 'Unauthorized access to another user records.');
+    }
+
+    // Fetch the registration records safely
+    $registrations = Registration::where('student_id', $studentId)->get();
+
+    return view('student.registrations', compact('registrations'));
+}
+
+
+
+
+
     public function index()
     {
         $students = Student::orderBy('full_name')->paginate(10);

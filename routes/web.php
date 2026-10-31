@@ -1,19 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 use App\Http\Controllers\QueryController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\CourseController;
-use App\Http\Controllers\LecturerDashboardController;
 
-<<<<<<< HEAD
+use App\Http\Controllers\LecturerDashboardController;
 use App\Models\Student;
 use App\Models\Course;
 use App\Models\Registration;
 use App\Models\Lecturer;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -25,12 +24,10 @@ Route::get('/', function () {
     return view('index');
 })->name('home');
 
-
 /*
 |--------------------------------------------------------------------------
 | System Dashboard
 |--------------------------------------------------------------------------
-| All dashboard statistics are retrieved dynamically from the database.
 */
 
 Route::get('/dashboard', function () {
@@ -49,7 +46,6 @@ Route::get('/dashboard', function () {
 
 })->name('dashboard');
 
-
 /*
 |--------------------------------------------------------------------------
 | Student Management
@@ -57,7 +53,6 @@ Route::get('/dashboard', function () {
 */
 
 Route::resource('students', StudentController::class);
-
 
 /*
 |--------------------------------------------------------------------------
@@ -67,6 +62,9 @@ Route::resource('students', StudentController::class);
 
 Route::resource('courses', CourseController::class);
 
+Route::get('/course', function () {
+    return redirect()->route('courses.index');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -76,22 +74,6 @@ Route::resource('courses', CourseController::class);
 
 Route::get('/student-courses', [QueryController::class, 'studentCourses'])
     ->name('student-courses');
-=======
-// Public Routes
-
-Route::get('/', [HomeController::class, 'index'])->name('index');
-Route::get('/index', [HomeController::class, 'index']);
-
-
-// Student CRUD
-    Route::resource('students', StudentController::class);
->>>>>>> 5e0b977bdddc00e27fb43fc7c29685ead8e4c7ca
-
-    // Course CRUD
-    Route::resource('courses', CourseController::class);
-    Route::get('/course', fn () => redirect()->route('courses.index'));
-
-<<<<<<< HEAD
 
 /*
 |--------------------------------------------------------------------------
@@ -101,16 +83,13 @@ Route::get('/index', [HomeController::class, 'index']);
 
 Route::get('/lecturer-dashboard', [LecturerDashboardController::class, 'index'])
     ->name('lecturer-dashboard');
-
-
 /*
 |--------------------------------------------------------------------------
 | Login Pages
 |--------------------------------------------------------------------------
 */
 
-Route::view('/login', 'login')
-    ->name('login');
+Route::view('/login', 'login')->name('login');
 
 Route::view('/student-login', 'student-login')
     ->name('student-login');
@@ -118,10 +97,9 @@ Route::view('/student-login', 'student-login')
 Route::view('/lecturer-login', 'lecturer-login')
     ->name('lecturer-login');
 
-
 /*
 |--------------------------------------------------------------------------
-| Course Registration Form
+| General Course Registration
 |--------------------------------------------------------------------------
 */
 
@@ -134,11 +112,10 @@ Route::get('/registration', function () {
 
 })->name('registration');
 
-
 /*
-
-| Course Registration Actions
-
+|--------------------------------------------------------------------------
+| Registration Management
+|--------------------------------------------------------------------------
 */
 
 Route::post('/registrations', [RegistrationController::class, 'store'])
@@ -156,18 +133,45 @@ Route::put('/registrations/{registration}', [RegistrationController::class, 'upd
 Route::delete('/registrations/{registration}', [RegistrationController::class, 'destroy'])
     ->name('registrations.destroy');
 
-=======
-    // Course Registration Management
-    Route::get('/registration', function () {
-        $students = Student::orderBy('full_name')->get();
-        $courses = Course::orderBy('course_code')->get();
+/*
+|--------------------------------------------------------------------------
+| Student Self-Service Dashboard
+|--------------------------------------------------------------------------
+*/
 
-        return view('registration', compact('students', 'courses'));
-    })->name('registration');
+Route::middleware('auth')->group(function () {
 
-    Route::post('/registrations', [RegistrationController::class, 'store'])->name('registrations.store');
-    Route::get('/registrations/{registration}', [RegistrationController::class, 'show'])->name('registrations.show');
-    Route::get('/registrations/{registration}/edit', [RegistrationController::class, 'edit'])->name('registrations.edit');
-    Route::put('/registrations/{registration}', [RegistrationController::class, 'update'])->name('registrations.update');
-    Route::delete('/registrations/{registration}', [RegistrationController::class, 'destroy'])->name('registrations.destroy');
->>>>>>> 5e0b977bdddc00e27fb43fc7c29685ead8e4c7ca
+    Route::get('/student/dashboard',
+        [RegistrationController::class, 'studentDashboard']
+    )->name('student.dashboard');
+
+    Route::post('/student/register-course',
+        [RegistrationController::class, 'registerStudentCourse']
+    )->name('student.register-course');
+
+    Route::delete('/student/drop-course/{registration}',
+        [RegistrationController::class, 'dropStudentCourse']
+    )->name('student.drop-course');
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| Logout
+|--------------------------------------------------------------------------
+|
+| If your authentication package already defines a logout route,
+| keep only one POST /logout route to avoid duplicate route names.
+|
+*/
+
+Route::post('/logout', function () {
+
+    Auth::logout();
+
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+
+    return redirect()->route('home');
+
+})->name('logout');

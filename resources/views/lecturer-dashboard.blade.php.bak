@@ -1,0 +1,54 @@
+
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Lecturer;
+use Illuminate\Http\Request;
+
+class LecturerDashboardController extends Controller
+{
+    public function index(Request $request)
+    {
+        // Temporary: use the first lecturer until login is connected.
+        $lecturer = Lecturer::with('courses.students')->first();
+
+        $courses = $lecturer?->courses ?? collect();
+
+        // Show the selected course, or the first assigned course.
+        $selectedCourse = $courses->firstWhere(
+            'id',
+            (int) $request->query('course_id')
+        ) ?? $courses->first();
+
+        $students = $selectedCourse?->students ?? collect();
+
+        // Search students by name or registration number.
+        if ($request->filled('search')) {
+            $search = strtolower(trim($request->search));
+
+            $students = $students->filter(function ($student) use ($search) {
+                return str_contains(
+                    strtolower($student->full_name),
+                    $search
+                ) || str_contains(
+                    strtolower($student->reg_no),
+                    $search
+                );
+            });
+        }
+
+        $totalStudents = $courses
+            ->flatMap(fn ($course) => $course->students)
+            ->unique('id')
+            ->count();
+
+        return view('lecturer-dashboard', compact(
+            'lecturer',
+            'courses',
+            'selectedCourse',
+            'students',
+            'totalStudents'
+        ));
+    }
+}

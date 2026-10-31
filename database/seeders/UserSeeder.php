@@ -47,7 +47,7 @@ class UserSeeder extends Seeder
             ['email' => 'bmutebi@phu.ac.ug'],
             [
                 'name' => 'Mr. Mutebi Bashir',
-                'password' => Hash::make('password1011'),
+                'password' => Hash::make('password101'),
                 'role' => 'lecturer',
             ]
         );

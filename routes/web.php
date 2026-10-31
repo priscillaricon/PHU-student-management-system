@@ -7,6 +7,37 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LecturerDashboardController;
 
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
+    
+    Route::get('/dashboard', function () {
+        $user = auth()->user();
+
+        if ($user->hasRole('Admin')) {
+            return view('admin.dashboard');
+        } elseif ($user->hasRole('Lecturer')) {
+            return view('lecturer.dashboard');
+        }
+        return view('student.dashboard');
+    })->name('dashboard');
+
+});
+
+// All authenticated routes
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
+
+    // Student Routes (Protected by role check)
+    Route::middleware(['role:Student'])->group(function () {
+        Route::get('/student/registrations', [StudentController::class, 'myRegistrations'])->name('student.registrations');
+    });
+
+    // Lecturer Routes
+    Route::middleware(['role:Lecturer'])->group(function () {
+        Route::get('/lecturer/courses', [CourseController::class, 'assignedCourses'])->name('lecturer.courses');
+    });
+
+});
+
 // Homepage
 Route::get('/', function () {
     return view('dashboard');
@@ -60,3 +91,12 @@ Route::put('/registrations/{registration}', [RegistrationController::class, 'upd
 
 Route::delete('/registrations/{registration}', [RegistrationController::class, 'destroy'])
     ->name('registrations.destroy');
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+});

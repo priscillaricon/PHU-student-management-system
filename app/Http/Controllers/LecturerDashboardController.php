@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Lecturer;
 use Illuminate\Http\Request;
 
+
 class LecturerDashboardController extends Controller
 {
     public function index(Request $request)

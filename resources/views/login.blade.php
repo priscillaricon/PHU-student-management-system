@@ -27,8 +27,25 @@
 
         </div>
 
+        {{-- Display Login Errors --}}
+        @if ($errors->any())
+            <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl p-3 text-sm">
+                @foreach ($errors->all() as $error)
+                    <p>{{ $error }}</p>
+                @endforeach
+            </div>
+        @endif
+
+        {{-- Display Success Messages --}}
+        @if (session('success'))
+            <div class="bg-green-50 border border-green-200 text-green-700 rounded-xl p-3 text-sm">
+                {{ session('success') }}
+            </div>
+        @endif
+
         {{-- Staff Login Form --}}
-        <form action="{{ route('dashboard') }}" method="GET" class="space-y-4">
+        <form action="{{ route('login.post') }}" method="POST" class="space-y-4">
+            @csrf
 
             {{-- Email Address --}}
             <div class="space-y-1.5">
@@ -37,66 +54,42 @@
                     Email Address
                 </label>
 
-                <div class="relative">
-
-                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                        <i data-lucide="mail" class="w-4 h-4"></i>
-                    </span>
-
-                    <input
-                        id="email"
-                        type="email"
-                        name="email"
-                        required
-                        autocomplete="username"
-                        placeholder="admin@phu.ac.ug"
-                        class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition-all"
-                    >
-
-                </div>
+                <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    value="{{ old('email') }}"
+                    required
+                    autocomplete="username"
+                    placeholder="admin@phu.ac.ug"
+                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition-all"
+                >
 
             </div>
 
             {{-- Password --}}
             <div class="space-y-1.5">
 
-                <div class="flex items-center justify-between">
+                <label for="password" class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    Password
+                </label>
 
-                    <label for="password" class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                        Password
-                    </label>
-
-                    <a href="#"
-                       class="text-xs text-emerald-600 hover:underline font-medium">
-                        Forgot password?
-                    </a>
-
-                </div>
-
-                <div class="relative">
-
-                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                        <i data-lucide="key-round" class="w-4 h-4"></i>
-                    </span>
-
-                    <input
-                        id="password"
-                        type="password"
-                        name="password"
-                        required
-                        autocomplete="current-password"
-                        placeholder="Enter your password"
-                        class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition-all"
-                    >
-
-                </div>
+                <input
+                    id="password"
+                    type="password"
+                    name="password"
+                    required
+                    autocomplete="current-password"
+                    placeholder="Enter your password"
+                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition-all"
+                >
 
             </div>
 
             {{-- Submit Button --}}
             <button
                 type="submit"
-                class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/20 transition-all text-sm flex items-center justify-center gap-2"
+                class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-lg transition-all text-sm flex items-center justify-center gap-2"
             >
                 <span>Sign In to Dashboard</span>
                 <i data-lucide="arrow-right" class="w-4 h-4"></i>

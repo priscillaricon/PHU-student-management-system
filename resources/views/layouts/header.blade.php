@@ -5,7 +5,7 @@
         <a href="{{ route('home') }}" class="flex items-center gap-3 group">
 
             <img
-                src="{{ asset('assets/image/logo.jpg') }}"
+                src="{{ asset('logo/logo.jpg') }}"
                 alt="PHU Emblem"
                 class="h-12 w-12 rounded-full border border-slate-200 group-hover:scale-105 transition-transform object-cover"
             >

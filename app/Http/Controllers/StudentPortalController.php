@@ -11,34 +11,39 @@ use Illuminate\Support\Facades\Auth;
 class StudentPortalController extends Controller
 {
     /**
-     * Display the student dashboard with registered and available courses.
+     * Display the student dashboard.
      */
     public function index()
     {
-        // Get the student record matching logged-in user email
+        // Find only the student record belonging to the logged-in user.
         $student = Student::where('email', Auth::user()->email)->first();
 
-        // Fallback for demonstration
+        // Do not expose another student's information.
         if (! $student) {
-            $student = Student::first();
+            return view('student.dashboard', [
+                'student' => null,
+                'registrations' => collect(),
+                'availableCourses' => collect(),
+                'totalCreditUnits' => 0,
+            ]);
         }
 
-        // Get student's registrations with course and lecturer
-        $registrations = $student ? $student->registrations()->with('course.lecturer')->get() : collect();
+        // Get this student's registrations with course and lecturer.
+        $registrations = $student->registrations()
+            ->with('course.lecturer')
+            ->get();
 
-        // Get IDs of courses the student already registered
+        // Find courses the student has not registered for.
         $registeredIds = $registrations->pluck('course_id');
 
-        // Available courses that are not yet registered
-        $availableCourses = Course::with('lecturer')->whereNotIn('id', $registeredIds)->get();
+        $availableCourses = Course::with('lecturer')
+            ->whereNotIn('id', $registeredIds)
+            ->get();
 
-        // Calculate total credit units
-        $totalCreditUnits = 0;
-        foreach ($registrations as $reg) {
-            if ($reg->course) {
-                $totalCreditUnits += $reg->course->credit_units;
-            }
-        }
+        // Calculate total credit units.
+        $totalCreditUnits = $registrations->sum(
+            fn ($registration) => $registration->course?->credit_units ?? 0
+        );
 
         return view('student.dashboard', compact(
             'student',
@@ -49,20 +54,25 @@ class StudentPortalController extends Controller
     }
 
     /**
-     * Student self-registration for a course.
+     * Register the logged-in student for a course.
      */
     public function registerCourse(Request $request)
     {
-        $student = Student::where('email', Auth::user()->email)->first() ?? Student::first();
+        // A student must have a matching student record.
+        $student = Student::where('email', Auth::user()->email)->first();
 
-        $request->validate([
+        if (! $student) {
+            abort(403, 'Your account is not linked to a student record. Please contact the administrator.');
+        }
+
+        $validated = $request->validate([
             'course_id' => 'required|exists:courses,id',
-            'semester' => 'required|string',
+            'semester' => 'required|string|max:50',
         ]);
 
-        // Check for duplicate registration
+        // Prevent duplicate registrations.
         $alreadyRegistered = Registration::where('student_id', $student->id)
-            ->where('course_id', $request->course_id)
+            ->where('course_id', $validated['course_id'])
             ->exists();
 
         if ($alreadyRegistered) {
@@ -71,8 +81,8 @@ class StudentPortalController extends Controller
 
         Registration::create([
             'student_id' => $student->id,
-            'course_id' => $request->course_id,
-            'semester' => $request->semester,
+            'course_id' => $validated['course_id'],
+            'semester' => $validated['semester'],
         ]);
 
         return redirect()->route('student.dashboard')
@@ -80,14 +90,23 @@ class StudentPortalController extends Controller
     }
 
     /**
-     * Drop a registered course.
+     * Drop a course registration.
      */
     public function dropCourse(Registration $registration)
     {
+        // Students can only drop their own registrations.
+        if (Auth::user()->role === 'student') {
+            $student = Student::where('email', Auth::user()->email)->first();
+
+            if (! $student || $registration->student_id !== $student->id) {
+                abort(403, 'You are not authorized to drop this registration.');
+            }
+        }
+
+        // Admins retain their administrative access.
         $registration->delete();
 
         return redirect()->route('student.dashboard')
             ->with('success', 'Course dropped successfully.');
     }
 }
-

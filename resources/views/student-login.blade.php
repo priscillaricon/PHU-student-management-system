@@ -53,7 +53,7 @@
             {{-- Registration Number --}}
             <div class="space-y-1.5">
 
-                <label for="registration_number" class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                <label for="reg_no" class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
                     Reg. No.
                 </label>
 
@@ -65,12 +65,12 @@
 
                     <input
                         type="text"
-                        id="registration_number"
-                        name="registration_number"
-                        value="{{ old('registration_number') }}"
+                        id="reg_no"
+                        name="reg_no"
+                        value="{{ old('reg_no') }}"
                         required
                         autocomplete="username"
-                        placeholder="e.g. 2200701234"
+                        placeholder="e.g. 23/U/1234/EVE"
                         class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-600 focus:bg-white transition-all">
 
                 </div>

@@ -7,56 +7,29 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LecturerDashboardController;
 
-// Homepage
-Route::get('/', function () {
-    return view('dashboard');
-})->name('dashboard');
+// Public Routes
 
-// Student management (CRUD)
-Route::resource('students', StudentController::class);
+Route::get('/', [HomeController::class, 'index'])->name('index');
+Route::get('/index', [HomeController::class, 'index']);
 
-// Course management (CRUD)
-Route::resource('courses', CourseController::class);
 
-// Student and course queries
-Route::get('/student-courses', [QueryController::class, 'studentCourses'])
-    ->name('student-courses');
+// Student CRUD
+    Route::resource('students', StudentController::class);
 
-Route::get('/course-students', [QueryController::class, 'courseStudents'])
-    ->name('course-students');
+    // Course CRUD
+    Route::resource('courses', CourseController::class);
+    Route::get('/course', fn () => redirect()->route('courses.index'));
 
-// Lecturer dashboard
-Route::get('/lecturer-dashboard', [LecturerDashboardController::class, 'index'])
-    ->name('lecturer-dashboard');
+    // Course Registration Management
+    Route::get('/registration', function () {
+        $students = Student::orderBy('full_name')->get();
+        $courses = Course::orderBy('course_code')->get();
 
-// Login pages
-Route::view('/login', 'login')
-    ->name('login');
+        return view('registration', compact('students', 'courses'));
+    })->name('registration');
 
-Route::view('/student-login', 'student-login')
-    ->name('student-login');
-
-Route::view('/lecturer-login', 'lecturer-login')
-    ->name('lecturer-login');
-
-// Registration page
-Route::view('/registration', 'registration')
-    ->name('registration');
-
-Route::post('/registrations', [RegistrationController::class, 'store'])
-    ->name('registrations.store');
-// Course Registration Management
-Route::post('/registrations', [RegistrationController::class, 'store'])
-    ->name('registrations.store');
-
-Route::get('/registrations/{registration}', [RegistrationController::class, 'show'])
-    ->name('registrations.show');
-
-Route::get('/registrations/{registration}/edit', [RegistrationController::class, 'edit'])
-    ->name('registrations.edit');
-
-Route::put('/registrations/{registration}', [RegistrationController::class, 'update'])
-    ->name('registrations.update');
-
-Route::delete('/registrations/{registration}', [RegistrationController::class, 'destroy'])
-    ->name('registrations.destroy');
+    Route::post('/registrations', [RegistrationController::class, 'store'])->name('registrations.store');
+    Route::get('/registrations/{registration}', [RegistrationController::class, 'show'])->name('registrations.show');
+    Route::get('/registrations/{registration}/edit', [RegistrationController::class, 'edit'])->name('registrations.edit');
+    Route::put('/registrations/{registration}', [RegistrationController::class, 'update'])->name('registrations.update');
+    Route::delete('/registrations/{registration}', [RegistrationController::class, 'destroy'])->name('registrations.destroy');

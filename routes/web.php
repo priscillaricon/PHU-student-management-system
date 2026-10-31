@@ -8,35 +8,60 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LecturerDashboardController;
 
 
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
-    
+// Authentication Routes
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+
+Route::get('/lecturer-login', [AuthController::class, 'showLecturerLogin'])->name('lecturer-login');
+Route::post('/lecturer-login', [AuthController::class, 'loginLecturer'])->name('lecturer-login.post');
+
+Route::get('/student-login', [AuthController::class, 'showStudentLogin'])->name('student-login');
+Route::post('/student-login', [AuthController::class, 'loginStudent'])->name('studentLogin');
+
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Question 1(c) Eloquent Query Demonstration Endpoints
+Route::get('/student-courses', [QueryController::class, 'studentCourses'])->name('student-courses');
+Route::get('/course-students', [QueryController::class, 'courseStudents'])->name('course-students');
+
+
+// Admin Protected Routes (role: admin)
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/dashboard', function () {
-        $user = auth()->user();
+        $totalStudents = Student::count();
+        $totalCourses = Course::count();
+        $totalRegistrations = Registration::count();
+        $totalLecturers = Lecturer::count();
 
-        if ($user->hasRole('Admin')) {
-            return view('admin.dashboard');
-        } elseif ($user->hasRole('Lecturer')) {
-            return view('lecturer.dashboard');
-        }
-        return view('student.dashboard');
+        $recentStudents = Student::latest()->take(5)->get();
+        $recentRegistrations = Registration::with(['student', 'course'])->latest()->take(5)->get();
+
+        return view('dashboard', compact(
+            'totalStudents',
+            'totalCourses',
+            'totalRegistrations',
+            'totalLecturers',
+            'recentStudents',
+            'recentRegistrations'
+        ));
     })->name('dashboard');
-
 });
 
-// All authenticated routes
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
+// Lecturer Protected Routes (role: lecturer, admin)
 
-    // Student Routes (Protected by role check)
-    Route::middleware(['role:Student'])->group(function () {
-        Route::get('/student/registrations', [StudentController::class, 'myRegistrations'])->name('student.registrations');
-    });
-
-    // Lecturer Routes
-    Route::middleware(['role:Lecturer'])->group(function () {
-        Route::get('/lecturer/courses', [CourseController::class, 'assignedCourses'])->name('lecturer.courses');
-    });
-
+Route::middleware(['auth', 'role:lecturer,admin'])->group(function () {
+    Route::get('/lecturer-dashboard', [LecturerDashboardController::class, 'index'])->name('lecturer-dashboard');
 });
+
+// Student Protected Routes (role: student, admin)
+
+Route::middleware(['auth', 'role:student,admin'])->group(function () {
+    Route::get('/student-dashboard', [StudentPortalController::class, 'index'])->name('student.dashboard');
+    Route::post('/student/register-course', [StudentPortalController::class, 'registerCourse'])->name('student.register-course');
+    Route::delete('/student/drop-course/{registration}', [StudentPortalController::class, 'dropCourse'])->name('student.drop-course');
+});
+
 
 // Homepage
 Route::get('/', function () {

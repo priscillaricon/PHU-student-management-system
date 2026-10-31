@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Lecturer;
+use Illuminate\Database\Seeder;
 
 class LecturerSeeder extends Seeder
 {
@@ -13,30 +12,36 @@ class LecturerSeeder extends Seeder
      */
     public function run(): void
     {
-         Lecturer::create([
-            'full_name' => 'Mr. Mutebi Bashir',
-            'email' => 'bmutebi@phu.ac.ug',
-            'department' => 'Business Computing',
-        ]);
+        Lecturer::firstOrCreate(
+            ['email' => 'bmutebi@phu.ac.ug'],
+            [
+                'full_name' => 'Mr. Mutebi Bashir',
+                'department' => 'Business Computing',
+            ]
+        );
 
-        Lecturer::create([
-            'full_name' => 'Dr. Jane Doe',
-            'email' => 'jdoe@phu.ac.ug',
-            'department' => 'Computer Science',
-        ]);
+        Lecturer::firstOrCreate(
+            ['email' => 'jdoe@phu.ac.ug'],
+            [
+                'full_name' => 'Dr. Jane Doe',
+                'department' => 'Computer Science',
+            ]
+        );
 
-          Lecturer::create([
-            'full_name' => 'Mrs. Joy',
-            'email' => 'joy@phu.ac.ug',
-            'department' => 'Business Computing',
-        ]);
+        Lecturer::firstOrCreate(
+            ['email' => 'joy@phu.ac.ug'],
+            [
+                'full_name' => 'Mrs. Joy',
+                'department' => 'Business Computing',
+            ]
+        );
 
-          Lecturer::create([
-            'full_name' => 'Mr. Mosh',
-            'email' => 'mosh@phu.ac.ug',
-            'department' => 'Business Computing',
-        ]);
-
-
+        Lecturer::firstOrCreate(
+            ['email' => 'mosh@phu.ac.ug'],
+            [
+                'full_name' => 'Mr. Mosh',
+                'department' => 'Business Computing',
+            ]
+        );
     }
 }

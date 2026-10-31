@@ -2,10 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-use App\Models\Lecturer;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
@@ -15,49 +13,52 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        
-      // Admin Account
-        User::create([
-            'name' => 'System Admin',
-            'email' => 'admin@phu.ac.ug',
-            'password' => Hash::make('password123'),
-            'role' => 'admin',
-        ]);
+        // Admin Account
+        User::firstOrCreate(
+            ['email' => 'admin@phu.ac.ug'],
+            [
+                'name' => 'System Admin',
+                'password' => Hash::make('password123'),
+                'role' => 'admin',
+            ]
+        );
 
-        // Student Account
-        User::create([
-            'name' => 'Priscillar Nakabugo',
-            'email' => 'priscillar@phu.ac.ug',
-            'password' => Hash::make('password456'),
-             'role' => 'student',
-        ]);
+        // Student Accounts
+        User::firstOrCreate(
+            ['email' => 'priscillar@phu.ac.ug'],
+            [
+                'name' => 'Priscillar Nakabugo',
+                'password' => Hash::make('password456'),
+                'role' => 'student',
+            ]
+        );
 
-        User::create([
-            'name' => 'Mwesigwa Daniel Plan',
-            'email' => 'daniel@phu.ac.ug',
-            'password' => Hash::make('password789'),
-            'role' => 'student',
-            
-        ]);
+        User::firstOrCreate(
+            ['email' => 'daniel@phu.ac.ug'],
+            [
+                'name' => 'Mwesigwa Daniel Plan',
+                'password' => Hash::make('password789'),
+                'role' => 'student',
+            ]
+        );
 
+        // Lecturer Accounts
+        User::firstOrCreate(
+            ['email' => 'bmutebi@phu.ac.ug'],
+            [
+                'name' => 'Mr. Mutebi Bashir',
+                'password' => Hash::make('password101'),
+                'role' => 'lecturer',
+            ]
+        );
 
-        //lecturerAccount
-    
-        User::create([
-            'name' => 'Mr. Mutebi Bashir',
-            'email' => 'bmutebi@phu.ac.ug',
-            'password' => Hash::make('password1011'),
-            'role' => 'lecturer',
-            
-        ]);
-
-        User::create([
-            'name' => 'Dr. Jane Doe',
-            'email' => 'jdoe@phu.ac.ug',
-            'password' => Hash::make('password1213'),
-            'role' => 'lecturer',
-        
-        ]);
-      
+        User::firstOrCreate(
+            ['email' => 'jdoe@phu.ac.ug'],
+            [
+                'name' => 'Dr. Jane Doe',
+                'password' => Hash::make('password1213'),
+                'role' => 'lecturer',
+            ]
+        );
     }
 }

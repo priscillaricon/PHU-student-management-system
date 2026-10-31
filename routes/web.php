@@ -1,177 +1,139 @@
+
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\QueryController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\CourseController;
-
 use App\Http\Controllers\LecturerDashboardController;
+use App\Http\Controllers\StudentPortalController;
+
 use App\Models\Student;
 use App\Models\Course;
-use App\Models\Registration;
 use App\Models\Lecturer;
+use App\Models\Registration;
 
-/*
-|--------------------------------------------------------------------------
-| Homepage
-|--------------------------------------------------------------------------
-*/
 
-Route::get('/', function () {
-    return view('index');
-})->name('home');
+// Homepage
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/index', [HomeController::class, 'index']);
 
-/*
-|--------------------------------------------------------------------------
-| System Dashboard
-|--------------------------------------------------------------------------
-*/
 
-Route::get('/dashboard', function () {
+// Authentication Routes
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 
-    $totalStudents = Student::count();
-    $totalCourses = Course::count();
-    $totalRegistrations = Registration::count();
-    $totalLecturers = Lecturer::count();
+Route::get('/lecturer-login', [AuthController::class, 'showLecturerLogin'])->name('lecturer-login');
+Route::post('/lecturer-login', [AuthController::class, 'loginLecturer'])->name('lecturer-login.post');
 
-    return view('dashboard', compact(
-        'totalStudents',
-        'totalCourses',
-        'totalRegistrations',
-        'totalLecturers'
-    ));
+Route::get('/student-login', [AuthController::class, 'showStudentLogin'])->name('student-login');
+Route::post('/student-login', [AuthController::class, 'loginStudent'])->name('studentLogin');
 
-})->name('dashboard');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-/*
-|--------------------------------------------------------------------------
-| Student Management
-|--------------------------------------------------------------------------
-*/
 
-Route::resource('students', StudentController::class);
+// Question 1(c): Eloquent Query Demonstration
+Route::get('/student-courses', [QueryController::class, 'studentCourses'])->name('student-courses');
+Route::get('/course-students', [QueryController::class, 'courseStudents'])->name('course-students');
 
-/*
-|--------------------------------------------------------------------------
-| Course Management
-|--------------------------------------------------------------------------
-*/
 
-Route::resource('courses', CourseController::class);
-
+// Course Redirect
 Route::get('/course', function () {
     return redirect()->route('courses.index');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Student and Course Queries
-|--------------------------------------------------------------------------
-*/
 
-Route::get('/student-courses', [QueryController::class, 'studentCourses'])
-    ->name('student-courses');
+// Admin Protected Routes
+Route::middleware(['auth', 'role:admin'])->group(function () {
 
-/*
-|--------------------------------------------------------------------------
-| Lecturer Dashboard
-|--------------------------------------------------------------------------
-*/
+    // Admin Dashboard
+    Route::get('/dashboard', function () {
 
-Route::get('/lecturer-dashboard', [LecturerDashboardController::class, 'index'])
-    ->name('lecturer-dashboard');
-/*
-|--------------------------------------------------------------------------
-| Login Pages
-|--------------------------------------------------------------------------
-*/
+        $totalStudents = Student::count();
+        $totalCourses = Course::count();
+        $totalRegistrations = Registration::count();
+        $totalLecturers = Lecturer::count();
 
-Route::view('/login', 'login')->name('login');
+        $recentStudents = Student::latest()->take(5)->get();
 
-Route::view('/student-login', 'student-login')
-    ->name('student-login');
+        $recentRegistrations = Registration::with(['student', 'course'])
+            ->latest()
+            ->take(5)
+            ->get();
 
-Route::view('/lecturer-login', 'lecturer-login')
-    ->name('lecturer-login');
+        return view('dashboard', compact(
+            'totalStudents',
+            'totalCourses',
+            'totalRegistrations',
+            'totalLecturers',
+            'recentStudents',
+            'recentRegistrations'
+        ));
 
-/*
-|--------------------------------------------------------------------------
-| General Course Registration
-|--------------------------------------------------------------------------
-*/
+    })->name('dashboard');
 
-Route::get('/registration', function () {
 
-    $students = Student::orderBy('full_name')->get();
-    $courses = Course::orderBy('course_code')->get();
+    // Student CRUD
+    Route::resource('students', StudentController::class);
 
-    return view('registration', compact('students', 'courses'));
 
-})->name('registration');
+    // Course CRUD
+    Route::resource('courses', CourseController::class);
 
-/*
-|--------------------------------------------------------------------------
-| Registration Management
-|--------------------------------------------------------------------------
-*/
 
-Route::post('/registrations', [RegistrationController::class, 'store'])
-    ->name('registrations.store');
+    // General Course Registration
+    Route::get('/registration', function () {
 
-Route::get('/registrations/{registration}', [RegistrationController::class, 'show'])
-    ->name('registrations.show');
+        $students = Student::orderBy('full_name')->get();
+        $courses = Course::orderBy('course_code')->get();
 
-Route::get('/registrations/{registration}/edit', [RegistrationController::class, 'edit'])
-    ->name('registrations.edit');
+        return view('registration', compact('students', 'courses'));
 
-Route::put('/registrations/{registration}', [RegistrationController::class, 'update'])
-    ->name('registrations.update');
+    })->name('registration');
 
-Route::delete('/registrations/{registration}', [RegistrationController::class, 'destroy'])
-    ->name('registrations.destroy');
 
-/*
-|--------------------------------------------------------------------------
-| Student Self-Service Dashboard
-|--------------------------------------------------------------------------
-*/
+    // Registration Management
+    Route::post('/registrations', [RegistrationController::class, 'store'])
+        ->name('registrations.store');
 
-Route::middleware('auth')->group(function () {
+    Route::get('/registrations/{registration}', [RegistrationController::class, 'show'])
+        ->name('registrations.show');
 
-    Route::get('/student/dashboard',
-        [RegistrationController::class, 'studentDashboard']
-    )->name('student.dashboard');
+    Route::get('/registrations/{registration}/edit', [RegistrationController::class, 'edit'])
+        ->name('registrations.edit');
 
-    Route::post('/student/register-course',
-        [RegistrationController::class, 'registerStudentCourse']
-    )->name('student.register-course');
+    Route::put('/registrations/{registration}', [RegistrationController::class, 'update'])
+        ->name('registrations.update');
 
-    Route::delete('/student/drop-course/{registration}',
-        [RegistrationController::class, 'dropStudentCourse']
-    )->name('student.drop-course');
+    Route::delete('/registrations/{registration}', [RegistrationController::class, 'destroy'])
+        ->name('registrations.destroy');
 
 });
 
-/*
-|--------------------------------------------------------------------------
-| Logout
-|--------------------------------------------------------------------------
-|
-| If your authentication package already defines a logout route,
-| keep only one POST /logout route to avoid duplicate route names.
-|
-*/
 
-Route::post('/logout', function () {
+// Lecturer Protected Routes
+Route::middleware(['auth', 'role:lecturer,admin'])->group(function () {
 
-    Auth::logout();
+    Route::get('/lecturer-dashboard', [LecturerDashboardController::class, 'index'])
+        ->name('lecturer-dashboard');
 
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
+});
 
-    return redirect()->route('home');
 
-})->name('logout');
+// Student Protected Routes
+Route::middleware(['auth', 'role:student,admin'])->group(function () {
+
+    Route::get('/student-dashboard', [StudentPortalController::class, 'index'])
+        ->name('student.dashboard');
+
+    Route::post('/student/register-course', [StudentPortalController::class, 'registerCourse'])
+        ->name('student.register-course');
+
+    Route::delete('/student/drop-course/{registration}', [StudentPortalController::class, 'dropCourse'])
+        ->name('student.drop-course');
+
+});

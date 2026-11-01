@@ -194,3 +194,6 @@ The following screenshots demonstrate the main features of the application.
 ## 10. Conclusion
 
 The Pearl Horizon University Student Management System provides a centralized platform for managing student records, courses, lecturer access and student registrations. It uses Laravel authentication, role-based access control and database relationships to support university academic administration.
+
+### Project Maintenance
+Project updates and improvements are maintained through the main branch.

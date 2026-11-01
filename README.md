@@ -11,7 +11,7 @@ The system provides different dashboards and permissions depending on the user's
 - **Administrator:** Manages student records and course information.
 - **Lecturer:** Views assigned courses and students registered for those courses.
 - **Student:** Views available courses, registers for courses and manages personal course registrations.
-- **Authentication:** Provides separate login access and role-based permissions.
+- **Authentication:** Provides secure login and role-based access permissions.
 - **Course Registration:** Allows students to register for available courses while preventing duplicate registrations.
 
 ## 3. Technologies Used
@@ -31,6 +31,7 @@ The system provides different dashboards and permissions depending on the user's
 - Composer
 - Node.js and npm
 - Visual Studio Code or another code editor
+- Git
 
 ### Step 1: Clone the Repository
 
@@ -55,7 +56,7 @@ npm install
 
 Create your environment file:
 
-```bash
+```powershell
 copy .env.example .env
 ```
 
@@ -75,7 +76,7 @@ DB_CONNECTION=sqlite
 
 Create the SQLite database file if it does not exist:
 
-```bash
+```powershell
 New-Item database/database.sqlite -ItemType File
 ```
 
@@ -84,6 +85,8 @@ New-Item database/database.sqlite -ItemType File
 ```bash
 php artisan migrate --seed
 ```
+
+This creates the database tables and inserts the sample records and user accounts.
 
 ### Step 6: Build Frontend Assets
 
@@ -107,21 +110,21 @@ http://127.0.0.1:8000
 
 | User Role | Main Responsibilities |
 |---|---|
-| Administrator | Manages students and courses and accesses administrative functions. |
+| Administrator | Manages students, courses and administrative functions. |
 | Lecturer | Views assigned courses and registered students. |
-| Student | Views available courses and manages course registrations. |
+| Student | Views available courses and manages personal course registrations. |
 
 ## 6. Sample Login Credentials
 
-Enter the actual sample accounts created by the project's database seeders below.
+The following demonstration accounts are created by the project's database seeders.
 
-| Role | Email / Registration Number | Password |
+| Role | Email | Password |
 |---|---|---|
-| Administrator | [Insert seeded admin email] | [Insert seeded password] |
-| Lecturer | [Insert seeded lecturer email] | [Insert seeded password] |
-| Student | [Insert seeded student email or registration number] | [Insert seeded password] |
+| Administrator | admin@phu.ac.ug | password123 |
+| Lecturer | bmutebi@phu.ac.ug | password101 |
+| Student | daniel@phu.ac.ug | password789 |
 
-**Note:** Replace the placeholders with the actual working credentials before submission. Do not publish private passwords.
+**Note:** These are demonstration credentials for coursework testing only. They should not be used for real accounts or production systems.
 
 ## 7. Database Structure
 
@@ -137,22 +140,41 @@ The system uses database relationships to connect students, courses and course r
 
 The project was developed collaboratively using Git and GitHub.
 
-Repository:
+**GitHub Repository:**
 
 https://github.com/priscillaricon/PHU-student-management-system
 
-The team used branches to organize development and pull requests to integrate contributions into the `develop` branch.
+The team used Git branches to organize development and pull requests to integrate contributions into the `develop` branch.
+
+The `main` branch is intended to hold the stable version of the application, while `develop` is used for integrating development work.
 
 ## 9. Project Screenshots
 
-Insert screenshots showing the following working features:
+The following screenshots demonstrate the main features of the application.
 
-1. Administrator dashboard.
-2. Student management.
-3. Course management.
-4. Lecturer dashboard.
-5. Student dashboard.
-6. Student course registration.
+### 9.1 Administrator Dashboard
+
+![Administrator Dashboard](screenshots/admin-dashboard.png)
+
+### 9.2 Student Management
+
+![Student Management](screenshots/students-management.png)
+
+### 9.3 Course Management
+
+![Course Management](screenshots/courses-management.png)
+
+### 9.4 Lecturer Dashboard
+
+![Lecturer Dashboard](screenshots/lecturer-dashboard.png)
+
+### 9.5 Student Dashboard
+
+![Student Dashboard](screenshots/student-dashboard.png)
+
+### 9.6 Student Course Registration
+
+![Student Course Registration](screenshots/course-registration.png)
 
 ## 10. Conclusion
 

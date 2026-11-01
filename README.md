@@ -1,59 +1,159 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Pearl Horizon University – Student Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 1. Project Overview
 
-## About Laravel
+The Pearl Horizon University (PHU) Student Management System is a web-based application developed using Laravel. It helps the university manage student information, courses, lecturer access and student course registrations.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The system provides different dashboards and permissions depending on the user's role.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 2. Main System Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Administrator:** Manages student records and course information.
+- **Lecturer:** Views assigned courses and students registered for those courses.
+- **Student:** Views available courses, registers for courses and manages personal course registrations.
+- **Authentication:** Provides separate login access and role-based permissions.
+- **Course Registration:** Allows students to register for available courses while preventing duplicate registrations.
 
-## Learning Laravel
+## 3. Technologies Used
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- PHP
+- Laravel Framework
+- SQLite Database
+- HTML and CSS
+- JavaScript
+- Git and GitHub
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 4. Installation and Setup
 
-## Laravel Sponsors
+### Requirements
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- PHP
+- Composer
+- Node.js and npm
+- Visual Studio Code or another code editor
 
-### Premium Partners
+### Step 1: Clone the Repository
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+git clone https://github.com/priscillaricon/PHU-student-management-system.git
+```
 
-## Contributing
+Navigate into the project folder:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+cd PHU-student-management-system
+```
 
-## Code of Conduct
+### Step 2: Install Dependencies
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+composer install
+npm install
+```
 
-## Security Vulnerabilities
+### Step 3: Configure the Environment
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Create your environment file:
 
-## License
+```bash
+copy .env.example .env
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Generate the application key:
+
+```bash
+php artisan key:generate
+```
+
+### Step 4: Configure the Database
+
+Configure SQLite in the `.env` file:
+
+```env
+DB_CONNECTION=sqlite
+```
+
+Create the SQLite database file if it does not exist:
+
+```bash
+New-Item database/database.sqlite -ItemType File
+```
+
+### Step 5: Run Migrations and Seeders
+
+```bash
+php artisan migrate --seed
+```
+
+### Step 6: Build Frontend Assets
+
+```bash
+npm run build
+```
+
+### Step 7: Start the Application
+
+```bash
+php artisan serve
+```
+
+Open the application in your browser:
+
+```text
+http://127.0.0.1:8000
+```
+
+## 5. User Roles and Permissions
+
+| User Role | Main Responsibilities |
+|---|---|
+| Administrator | Manages students and courses and accesses administrative functions. |
+| Lecturer | Views assigned courses and registered students. |
+| Student | Views available courses and manages course registrations. |
+
+## 6. Sample Login Credentials
+
+Enter the actual sample accounts created by the project's database seeders below.
+
+| Role | Email / Registration Number | Password |
+|---|---|---|
+| Administrator | [Insert seeded admin email] | [Insert seeded password] |
+| Lecturer | [Insert seeded lecturer email] | [Insert seeded password] |
+| Student | [Insert seeded student email or registration number] | [Insert seeded password] |
+
+**Note:** Replace the placeholders with the actual working credentials before submission. Do not publish private passwords.
+
+## 7. Database Structure
+
+The system uses database relationships to connect students, courses and course registrations.
+
+- A student can register for many courses.
+- A course can have many registered students.
+- Course registrations connect students and courses.
+- Foreign keys maintain relationships between records.
+- Duplicate course registrations are prevented.
+
+## 8. GitHub Collaboration
+
+The project was developed collaboratively using Git and GitHub.
+
+Repository:
+
+https://github.com/priscillaricon/PHU-student-management-system
+
+The team used branches to organize development and pull requests to integrate contributions into the `develop` branch.
+
+## 9. Project Screenshots
+
+Insert screenshots showing the following working features:
+
+1. Administrator dashboard.
+2. Student management.
+3. Course management.
+4. Lecturer dashboard.
+5. Student dashboard.
+6. Student course registration.
+
+## 10. Conclusion
+
+The Pearl Horizon University Student Management System provides a centralized platform for managing student records, courses, lecturer access and student registrations. It uses Laravel authentication, role-based access control and database relationships to support university academic administration.

@@ -18,7 +18,7 @@ The system provides different dashboards and permissions depending on the user's
 
 - PHP
 - Laravel Framework
-- SQLite Database
+- MySQL/MariaDB Database
 - HTML and CSS
 - JavaScript
 - Git and GitHub
@@ -29,6 +29,7 @@ The system provides different dashboards and permissions depending on the user's
 
 - PHP
 - Composer
+- MySQL or MariaDB
 - Node.js and npm
 - Visual Studio Code or another code editor
 - Git
@@ -66,19 +67,30 @@ Generate the application key:
 php artisan key:generate
 ```
 
-### Step 4: Configure the Database
+### Step 4: Configure the MySQL Database
 
-Configure SQLite in the `.env` file:
+Ensure MySQL or MariaDB is running.
+
+Create a database named `phu-student-management-system` using phpMyAdmin or the MySQL command line.
+
+Alternatively, execute:
+
+```sql
+CREATE DATABASE `phu-student-management-system`;
+```
+
+Configure the database section in your `.env` file:
 
 ```env
-DB_CONNECTION=sqlite
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=phu-student-management-system
+DB_USERNAME=root
+DB_PASSWORD=
 ```
 
-Create the SQLite database file if it does not exist:
-
-```powershell
-New-Item database/database.sqlite -ItemType File
-```
+Use the appropriate database username and password for your MySQL installation.
 
 ### Step 5: Run Migrations and Seeders
 
@@ -144,9 +156,12 @@ The project was developed collaboratively using Git and GitHub.
 
 https://github.com/priscillaricon/PHU-student-management-system
 
-The team used Git branches to organize development and pull requests to integrate contributions into the `develop` branch.
+The team used Git branches to organize development and integrate contributions.
 
-The `main` branch is intended to hold the stable version of the application, while `develop` is used for integrating development work.
+- The `develop` branch was used for integrating development work.
+- The `main` branch contains the merged version of the application and is intended to hold the stable release.
+
+The final development changes were merged into `main`.
 
 ## 9. Project Screenshots
 

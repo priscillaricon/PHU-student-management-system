@@ -28,7 +28,15 @@
         </div>
 
         {{-- Lecturer Login Form --}}
-        <form action="{{ route('lecturer-dashboard') }}" method="GET" class="space-y-4">
+        <form action="{{ route('lecturer-login.post') }}" method="POST" class="space-y-4">
+            @csrf
+
+            {{-- Display Login Errors --}}
+            @if ($errors->any())
+                <div class="bg-red-50 border border-red-200 text-red-700 p-3 rounded-lg text-sm">
+                    {{ $errors->first() }}
+                </div>
+            @endif
 
             {{-- Email --}}
             <div class="space-y-1.5">
@@ -47,6 +55,7 @@
                         id="email"
                         type="email"
                         name="email"
+                        value="{{ old('email') }}"
                         required
                         autocomplete="username"
                         placeholder="lecturer@phu.ac.ug"

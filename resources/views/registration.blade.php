@@ -60,22 +60,31 @@
     {{-- Main Content --}}
     <div class="pt-20 pl-64 pr-8 pb-12 flex-1 flex flex-col">
 
-        <main class="flex-1 max-w-2xl w-full mx-auto">
+        <main class="flex-1 max-w-3xl w-full mx-auto">
 
             {{-- Page Heading --}}
             <div class="mb-6">
-                <h1 class="text-2xl font-bold text-slate-900">
-                    Course Registration Form
-                </h1>
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                        <i data-lucide="clipboard-list" class="w-6 h-6"></i>
+                    </div>
 
-                <p class="text-slate-500 text-sm mt-1">
-                    Register a student for semester course units.
-                </p>
+                    <div>
+                        <h1 class="text-2xl font-bold text-slate-900">
+                            Course Registration
+                        </h1>
+
+                        <p class="text-slate-500 text-sm">
+                            Register students for semester course units.
+                        </p>
+                    </div>
+                </div>
             </div>
 
             {{-- Success Message --}}
             @if (session('success'))
-                <div class="mb-4 p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm">
+                <div class="mb-4 p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-2">
+                    <i data-lucide="check-circle" class="w-5 h-5"></i>
                     {{ session('success') }}
                 </div>
             @endif
@@ -98,13 +107,42 @@
             {{-- Registration Form --}}
             <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
 
-                <form action="{{ route('registrations.store') }}" method="POST" class="space-y-5">
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold text-slate-900">
+                        Student Registration Details
+                    </h2>
+
+                    <p class="text-sm text-slate-500 mt-1">
+                        Select a student, course unit and semester below.
+                    </p>
+                </div>
+
+                <form action="{{ route('registrations.store') }}" method="POST" class="space-y-6">
 
                     @csrf
 
                     {{-- Student Selection --}}
                     <div>
-                        <label for="student_id" class="block text-sm font-medium text-slate-700 mb-2">
+                        <label for="student_search" class="block text-sm font-semibold text-slate-700 mb-2">
+                            Search Student
+                        </label>
+
+                        <div class="relative">
+                            <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+
+                            <input
+                                type="search"
+                                id="student_search"
+                                placeholder="Search by student name or registration number..."
+                                autocomplete="off"
+                                class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm">
+                        </div>
+
+                        <p class="text-xs text-slate-500 mt-2">
+                            Type a student's name or registration number to find them quickly.
+                        </p>
+
+                        <label for="student_id" class="block text-sm font-semibold text-slate-700 mt-4 mb-2">
                             Select Student
                         </label>
 
@@ -112,26 +150,36 @@
                             id="student_id"
                             name="student_id"
                             required
-                            class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-600 text-sm">
+                            class="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm">
 
                             <option value="">Choose a student...</option>
 
                             @foreach ($students ?? [] as $student)
                                 <option
                                     value="{{ $student->id }}"
+                                    data-search="{{ strtolower(($student->full_name ?? '') . ' ' . ($student->reg_no ?? '')) }}"
                                     {{ old('student_id') == $student->id ? 'selected' : '' }}>
 
-                                    {{ $student->name ?? $student->student_name ?? 'Student #' . $student->id }}
+                                    {{ $student->full_name ?? 'Unnamed Student' }}
+                                    - {{ $student->reg_no ?? 'No registration number' }}
 
                                 </option>
                             @endforeach
 
                         </select>
+
+                        <p id="student_count" class="text-xs text-slate-500 mt-2">
+                            {{ count($students ?? []) }} student(s) available.
+                        </p>
+
+                        <p id="no_student_found" class="hidden text-sm text-red-600 mt-2">
+                            No student matches your search.
+                        </p>
                     </div>
 
                     {{-- Course Selection --}}
                     <div>
-                        <label for="course_id" class="block text-sm font-medium text-slate-700 mb-2">
+                        <label for="course_id" class="block text-sm font-semibold text-slate-700 mb-2">
                             Select Course Unit
                         </label>
 
@@ -139,7 +187,7 @@
                             id="course_id"
                             name="course_id"
                             required
-                            class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-600 text-sm">
+                            class="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm">
 
                             <option value="">Choose a course...</option>
 
@@ -158,7 +206,7 @@
 
                     {{-- Semester --}}
                     <div>
-                        <label for="semester" class="block text-sm font-medium text-slate-700 mb-2">
+                        <label for="semester" class="block text-sm font-semibold text-slate-700 mb-2">
                             Semester
                         </label>
 
@@ -166,7 +214,7 @@
                             id="semester"
                             name="semester"
                             required
-                            class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-600 text-sm">
+                            class="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm">
 
                             <option value="">Select semester...</option>
 
@@ -188,20 +236,26 @@
                     {{-- Duplicate Registration Notice --}}
                     <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-lg flex items-start gap-3">
 
-                        <i data-lucide="alert-circle" class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5"></i>
+                        <i data-lucide="shield-check" class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5"></i>
 
-                        <p class="text-xs text-emerald-900 leading-relaxed">
-                            <strong>Duplicate Protection:</strong>
-                            The system should prevent students from registering more than once for the same course unit in the same semester.
-                        </p>
+                        <div>
+                            <p class="text-sm font-semibold text-emerald-900">
+                                Duplicate Registration Protection
+                            </p>
+
+                            <p class="text-xs text-emerald-800 leading-relaxed mt-1">
+                                Students should not be registered more than once for the same course unit in the same semester.
+                            </p>
+                        </div>
 
                     </div>
 
                     {{-- Submit Button --}}
                     <button
                         type="submit"
-                        class="w-full py-3 px-4 bg-emerald-600 text-white rounded-lg font-semibold text-sm hover:bg-emerald-700 shadow-sm">
+                        class="w-full py-3 px-4 bg-emerald-600 text-white rounded-lg font-semibold text-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition flex items-center justify-center gap-2">
 
+                        <i data-lucide="check-circle" class="w-5 h-5"></i>
                         Complete Course Registration
 
                     </button>
@@ -215,6 +269,62 @@
     </div>
 
 </div>
+
+{{-- Student Search Script --}}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const searchInput = document.getElementById('student_search');
+    const studentSelect = document.getElementById('student_id');
+    const studentCount = document.getElementById('student_count');
+    const noStudentFound = document.getElementById('no_student_found');
+
+    if (!searchInput || !studentSelect) {
+        return;
+    }
+
+    const studentOptions = Array.from(studentSelect.options).filter(function (option) {
+        return option.value !== '';
+    });
+
+    searchInput.addEventListener('input', function () {
+
+        const searchTerm = searchInput.value.trim().toLowerCase();
+        let visibleCount = 0;
+
+        studentOptions.forEach(function (option) {
+
+            const studentDetails = option.dataset.search || option.textContent.toLowerCase();
+
+            const matches = studentDetails.includes(searchTerm);
+
+            option.hidden = !matches;
+
+            if (matches) {
+                visibleCount++;
+            }
+
+        });
+
+        if (studentCount) {
+            studentCount.textContent = visibleCount + ' student(s) found.';
+        }
+
+        if (noStudentFound) {
+            noStudentFound.classList.toggle('hidden', visibleCount !== 0);
+        }
+
+        // Clear a selection if it no longer matches the search.
+        const selectedOption = studentSelect.options[studentSelect.selectedIndex];
+
+        if (selectedOption && selectedOption.hidden) {
+            studentSelect.value = '';
+        }
+
+    });
+
+});
+</script>
 
 @include('layouts.footer')
 

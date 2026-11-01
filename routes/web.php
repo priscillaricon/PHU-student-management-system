@@ -1,4 +1,3 @@
-
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -18,36 +17,53 @@ use App\Models\Lecturer;
 use App\Models\Registration;
 
 
-// Homepage
+// ==========================================
+// HOMEPAGE
+// ==========================================
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/index', [HomeController::class, 'index']);
 
 
-// Authentication Routes
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+// ==========================================
+// AUTHENTICATION ROUTES
+// ==========================================
 
-Route::get('/lecturer-login', [AuthController::class, 'showLecturerLogin'])->name('lecturer-login');
-Route::post('/lecturer-login', [AuthController::class, 'loginLecturer'])->name('lecturer-login.post');
+Route::get('/login', [AuthController::class, 'showLogin'])
+    ->name('login');
 
-Route::get('/student-login', [AuthController::class, 'showStudentLogin'])->name('student-login');
-Route::post('/student-login', [AuthController::class, 'loginStudent'])->name('studentLogin');
+Route::post('/login', [AuthController::class, 'login'])
+    ->name('login.post');
 
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/lecturer-login', [AuthController::class, 'showLecturerLogin'])
+    ->name('lecturer-login');
+
+Route::post('/lecturer-login', [AuthController::class, 'loginLecturer'])
+    ->name('lecturer-login.post');
+
+Route::get('/student-login', [AuthController::class, 'showStudentLogin'])
+    ->name('student-login');
+
+Route::post('/student-login', [AuthController::class, 'loginStudent'])
+    ->name('studentLogin');
+
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->name('logout');
 
 
-// Question 1(c): Eloquent Query Demonstration
-Route::get('/student-courses', [QueryController::class, 'studentCourses'])->name('student-courses');
-Route::get('/course-students', [QueryController::class, 'courseStudents'])->name('course-students');
+// ==========================================
+// COURSE REDIRECT
+// ==========================================
 
-
-// Course Redirect
 Route::get('/course', function () {
     return redirect()->route('courses.index');
 });
 
 
-// Admin Protected Routes
+// ==========================================
+// ADMIN PROTECTED ROUTES
+// ==========================================
+
 Route::middleware(['auth', 'role:admin'])->group(function () {
 
     // Admin Dashboard
@@ -58,7 +74,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         $totalRegistrations = Registration::count();
         $totalLecturers = Lecturer::count();
 
-        $recentStudents = Student::latest()->take(5)->get();
+        $recentStudents = Student::latest()
+            ->take(5)
+            ->get();
 
         $recentRegistrations = Registration::with(['student', 'course'])
             ->latest()
@@ -112,10 +130,23 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/registrations/{registration}', [RegistrationController::class, 'destroy'])
         ->name('registrations.destroy');
 
+
+    // Question 1(c): Eloquent Query Demonstration
+    // Only authenticated administrators can access these queries.
+
+    Route::get('/student-courses', [QueryController::class, 'studentCourses'])
+        ->name('student-courses');
+
+    Route::get('/course-students', [QueryController::class, 'courseStudents'])
+        ->name('course-students');
+
 });
 
 
-// Lecturer Protected Routes
+// ==========================================
+// LECTURER PROTECTED ROUTES
+// ==========================================
+
 Route::middleware(['auth', 'role:lecturer,admin'])->group(function () {
 
     Route::get('/lecturer-dashboard', [LecturerDashboardController::class, 'index'])
@@ -124,7 +155,10 @@ Route::middleware(['auth', 'role:lecturer,admin'])->group(function () {
 });
 
 
-// Student Protected Routes
+// ==========================================
+// STUDENT PROTECTED ROUTES
+// ==========================================
+
 Route::middleware(['auth', 'role:student,admin'])->group(function () {
 
     Route::get('/student-dashboard', [StudentPortalController::class, 'index'])

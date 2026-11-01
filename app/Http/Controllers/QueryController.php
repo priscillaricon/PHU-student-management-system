@@ -8,30 +8,32 @@ use App\Models\Student;
 class QueryController extends Controller
 {
     /**
-     * Question 1(c): Eloquent query to retrieve a student's registered courses.
+     * Question 1(c):
+     * Retrieve a student's registered courses using Eloquent.
      */
     public function studentCourses()
     {
         $student = Student::with('courses')->first();
 
         return response()->json([
-            'student' => $student ? $student->full_name : null,
-            'reg_no' => $student ? $student->reg_no : null,
-            'courses' => $student ? $student->courses : [],
+            'student' => $student?->full_name,
+            'reg_no' => $student?->reg_no,
+            'courses' => $student?->courses ?? [],
         ]);
     }
 
     /**
-     * Question 1(c): Eloquent query to retrieve students registered for a course.
+     * Question 1(c):
+     * Retrieve students registered for a course using Eloquent.
      */
     public function courseStudents()
     {
         $course = Course::with('students')->first();
 
         return response()->json([
-            'course' => $course ? $course->course_name : null,
-            'course_code' => $course ? $course->course_code : null,
-            'students' => $course ? $course->students : [],
+            'course' => $course?->course_name,
+            'course_code' => $course?->course_code,
+            'students' => $course?->students ?? [],
         ]);
     }
 }

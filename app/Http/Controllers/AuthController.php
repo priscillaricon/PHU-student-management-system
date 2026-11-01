@@ -8,13 +8,15 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    // Show staff/admin login page
+    // ==========================================
+    // ADMIN / STAFF LOGIN
+    // ==========================================
+
     public function showLogin()
     {
         return view('login');
     }
 
-    // Process staff/admin login
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -22,30 +24,42 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-
-            if (Auth::user()->role === 'admin') {
-                return redirect()->route('dashboard');
-            }
-
-            if (Auth::user()->role === 'lecturer') {
-                return redirect()->route('lecturer-dashboard');
-            }
-
-            return redirect()->route('student.dashboard');
+        if (!Auth::attempt($credentials)) {
+            return back()->withErrors([
+                'email' => 'Invalid email or password.'
+            ]);
         }
 
-        return back()->withErrors(['email' => 'Invalid email or password.']);
+        // Only administrators and lecturers can use staff login.
+        $role = Auth::user()->role;
+
+        if (!in_array($role, ['admin', 'lecturer'])) {
+            Auth::logout();
+
+            return back()->withErrors([
+                'email' => 'Please use the correct login portal for your account.'
+            ]);
+        }
+
+        $request->session()->regenerate();
+
+        if ($role === 'admin') {
+            return redirect()->route('dashboard');
+        }
+
+        return redirect()->route('lecturer-dashboard');
     }
 
-    // Show lecturer login page
+
+    // ==========================================
+    // LECTURER LOGIN
+    // ==========================================
+
     public function showLecturerLogin()
     {
         return view('lecturer-login');
     }
 
-    // Process lecturer login
     public function loginLecturer(Request $request)
     {
         $credentials = $request->validate([
@@ -53,62 +67,102 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-
-            if (Auth::user()->role === 'lecturer' || Auth::user()->role === 'admin') {
-                return redirect()->route('lecturer-dashboard');
-            }
-
-            Auth::logout();
-
-            return back()->withErrors(['email' => 'This account is not a lecturer account.']);
+        if (!Auth::attempt($credentials)) {
+            return back()->withErrors([
+                'email' => 'Invalid email or password.'
+            ]);
         }
 
-        return back()->withErrors(['email' => 'Invalid email or password.']);
+        $role = Auth::user()->role;
+
+        if (!in_array($role, ['lecturer', 'admin'])) {
+            Auth::logout();
+
+            return back()->withErrors([
+                'email' => 'This account is not authorized to use the lecturer login.'
+            ]);
+        }
+
+        $request->session()->regenerate();
+
+        if ($role === 'admin') {
+            return redirect()->route('dashboard');
+        }
+
+        return redirect()->route('lecturer-dashboard');
     }
 
-    // Show student login page
+
+    // ==========================================
+    // STUDENT LOGIN
+    // ==========================================
+
     public function showStudentLogin()
     {
         return view('student-login');
     }
 
-    // Process student login
     public function loginStudent(Request $request)
     {
         $request->validate([
-            'reg_no' => 'required',
-            'password' => 'required',
+            'reg_no' => 'required|string',
+            'password' => 'required|string',
         ]);
 
         $input = trim($request->reg_no);
+
+        // Allow login using either registration number or email.
         $email = $input;
 
-        // If user entered a registration number instead of an email
-        if (! filter_var($input, FILTER_VALIDATE_EMAIL)) {
+        if (!filter_var($input, FILTER_VALIDATE_EMAIL)) {
             $student = Student::where('reg_no', $input)->first();
-            if ($student) {
-                $email = $student->email;
+
+            if (!$student) {
+                return back()->withErrors([
+                    'reg_no' => 'Invalid registration number or password.'
+                ]);
             }
+
+            $email = $student->email;
         }
 
-        if (Auth::attempt(['email' => $email, 'password' => $request->password])) {
-            $request->session()->regenerate();
-
-            return redirect()->route('student.dashboard');
+        if (!Auth::attempt([
+            'email' => $email,
+            'password' => $request->password
+        ])) {
+            return back()->withErrors([
+                'reg_no' => 'Invalid registration number or password.'
+            ]);
         }
 
-        return back()->withErrors(['reg_no' => 'Invalid registration number or password.']);
+        // Only student accounts can access the student login.
+        if (Auth::user()->role !== 'student') {
+            Auth::logout();
+
+            return back()->withErrors([
+                'reg_no' => 'This account is not authorized to use the student portal.'
+            ]);
+        }
+
+        $request->session()->regenerate();
+
+        return redirect()->route('student.dashboard');
     }
 
-    // Logout
+
+    // ==========================================
+    // LOGOUT
+    // ==========================================
+
     public function logout(Request $request)
     {
         Auth::logout();
+
         $request->session()->invalidate();
+
         $request->session()->regenerateToken();
 
-        return redirect()->route('login')->with('success', 'You have logged out.');
+        return redirect()->route('login')
+            ->with('success', 'You have logged out.');
     }
 }

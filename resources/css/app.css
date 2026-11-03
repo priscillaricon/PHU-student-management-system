@@ -1,7 +1,202 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Hide elements until Alpine.js initializes */
 [x-cloak] {
-    display: none;
+    display: none !important;
+}
+
+/* =========================================
+   PEARL HORIZON UNIVERSITY DESIGN SYSTEM
+========================================= */
+
+:root {
+    --phu-green: #047857;
+    --phu-green-dark: #065f46;
+    --phu-green-light: #d1fae5;
+
+    --phu-gold: #f59e0b;
+
+    --phu-background: #f8fafc;
+    --phu-white: #ffffff;
+
+    --phu-text: #1e293b;
+    --phu-muted: #64748b;
+    --phu-border: #e2e8f0;
+
+    --phu-radius: 12px;
+    --phu-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+/* =========================================
+   GENERAL PAGE STYLING
+========================================= */
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Inter', 'Figtree', sans-serif;
+    color: var(--phu-text);
+    background-color: var(--phu-background);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* =========================================
+   HEADINGS
+========================================= */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--phu-text);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.3;
+}
+
+/* =========================================
+   LINKS
+========================================= */
+
+a {
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--phu-green);
+}
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+button,
+input[type="submit"],
+input[type="button"] {
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.15s ease,
+        box-shadow 0.2s ease;
+}
+
+button:active,
+input[type="submit"]:active {
+    transform: scale(0.98);
+}
+
+/* =========================================
+   FORM INPUTS
+========================================= */
+
+input,
+select,
+textarea {
+    font: inherit;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--phu-green);
+    box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.12);
+}
+
+/* =========================================
+   TABLES
+========================================= */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    font-weight: 600;
+    text-align: left;
+}
+
+/* =========================================
+   IMAGES
+========================================= */
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* =========================================
+   CARDS
+========================================= */
+
+.phu-card {
+    background-color: var(--phu-white);
+    border: 1px solid var(--phu-border);
+    border-radius: var(--phu-radius);
+    box-shadow: var(--phu-shadow);
+    padding: 1.5rem;
+}
+
+/* =========================================
+   PHU COLORS
+========================================= */
+
+.phu-primary {
+    background-color: var(--phu-green);
+    color: var(--phu-white);
+}
+
+.phu-primary:hover {
+    background-color: var(--phu-green-dark);
+}
+
+.phu-text-primary {
+    color: var(--phu-green);
+}
+
+.phu-text-muted {
+    color: var(--phu-muted);
+}
+
+/* =========================================
+   RESPONSIVE DESIGN
+========================================= */
+
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+
+    .phu-card {
+        padding: 1rem;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+
+/* =========================================
+   ACCESSIBILITY
+========================================= */
+
+:focus-visible {
+    outline: 2px solid var(--phu-green);
+    outline-offset: 2px;
 }

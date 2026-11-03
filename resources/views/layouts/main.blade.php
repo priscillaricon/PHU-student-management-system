@@ -6,6 +6,8 @@
 
     <title>Pearl Horizon University — Academic & Student Portal</title>
 
+@vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>

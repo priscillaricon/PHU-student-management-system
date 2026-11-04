@@ -5,7 +5,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>Pearl Horizon University</title>
+
+        <!-- Pearl Horizon University Browser Icon -->
+        <link rel="icon" href="{{ asset('logo/logo.jpg') }}?v=2" type="image/jpeg">
+        <link rel="shortcut icon" href="{{ asset('logo/logo.jpg') }}?v=2" type="image/jpeg">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -17,6 +21,7 @@
         <!-- Styles -->
         @livewireStyles
     </head>
+
     <body class="font-sans antialiased">
         <x-banner />
 

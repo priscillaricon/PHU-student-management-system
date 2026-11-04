@@ -8,40 +8,6 @@
 
 <main class="min-h-screen bg-slate-50">
 
-    {{-- Dashboard Navigation --}}
-    <div class="bg-white border-b border-slate-200">
-        <div class="max-w-7xl mx-auto px-6 py-4">
-            <nav class="flex flex-wrap items-center gap-3 text-sm font-semibold">
-
-                <a href="{{ route('dashboard') }}"
-                   class="px-4 py-2 rounded-lg bg-emerald-50 text-emerald-700">
-                    Dashboard
-                </a>
-
-                <a href="{{ route('students.index') }}"
-                   class="px-4 py-2 rounded-lg text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 transition">
-                    Students
-                </a>
-
-                <a href="{{ route('courses.index') }}"
-                   class="px-4 py-2 rounded-lg text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 transition">
-                    Courses
-                </a>
-
-                <a href="{{ route('registration') }}"
-                   class="px-4 py-2 rounded-lg text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 transition">
-                    Registrations
-                </a>
-
-                <a href="{{ route('lecturer-dashboard') }}"
-                   class="px-4 py-2 rounded-lg text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 transition">
-                    Lecturers
-                </a>
-
-            </nav>
-        </div>
-    </div>
-
     <div class="max-w-7xl mx-auto px-5 sm:px-6 py-10">
 
         {{-- Welcome Section --}}
@@ -293,6 +259,27 @@
                     <a href="{{ route('login') }}"
                        class="inline-flex items-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition">
                         Open Staff Portal <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+
+                {{-- User Account Management --}}
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
+                    <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-5">
+                        <i data-lucide="user-cog" class="w-6 h-6"></i>
+                    </div>
+
+                    <h3 class="text-lg font-bold text-slate-900">
+                        User Account Management
+                    </h3>
+
+                    <p class="text-sm text-slate-500 mt-3 mb-6">
+                        Register students, lecturers and administrators, and manage their login accounts.
+                    </p>
+
+                    <a href="{{ route('admin.users.index') }}"
+                       class="inline-flex items-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition">
+                        Manage User Accounts
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </a>
                 </div>
 

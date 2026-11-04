@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +7,11 @@
 
     <title>Pearl Horizon University — Academic & Student Portal</title>
 
-@vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Pearl Horizon University Browser Tab Icon -->
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=8">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=8">
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\QueryController;
 use App\Http\Controllers\RegistrationController;
@@ -93,6 +94,16 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         ));
 
     })->name('dashboard');
+
+    // Admin user and account management
+Route::get('/admin/users', [AdminUserController::class, 'index'])
+    ->name('admin.users.index');
+
+Route::get('/admin/users/create', [AdminUserController::class, 'create'])
+    ->name('admin.users.create');
+
+Route::post('/admin/users', [AdminUserController::class, 'store'])
+    ->name('admin.users.store');
 
 
     // Student CRUD

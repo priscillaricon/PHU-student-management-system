@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -30,10 +31,18 @@ class AuthController extends Controller
             ]);
         }
 
-        // Only administrators and lecturers can use staff login.
+        // Block inactive accounts.
+        if (!Auth::user()->is_active) {
+            Auth::logout();
+
+            return back()->withErrors([
+                'email' => 'Your account has been deactivated. Contact the system administrator.'
+            ]);
+        }
+
         $role = Auth::user()->role;
 
-        if (!in_array($role, ['admin', 'lecturer'])) {
+        if (!in_array($role, ['admin', 'lecturer'], true)) {
             Auth::logout();
 
             return back()->withErrors([
@@ -42,6 +51,12 @@ class AuthController extends Controller
         }
 
         $request->session()->regenerate();
+
+        ActivityLogger::log(
+            'login',
+            Auth::user(),
+            'User logged in through the staff login portal.'
+        );
 
         if ($role === 'admin') {
             return redirect()->route('dashboard');
@@ -73,9 +88,18 @@ class AuthController extends Controller
             ]);
         }
 
+        // Block inactive accounts.
+        if (!Auth::user()->is_active) {
+            Auth::logout();
+
+            return back()->withErrors([
+                'email' => 'Your account has been deactivated. Contact the system administrator.'
+            ]);
+        }
+
         $role = Auth::user()->role;
 
-        if (!in_array($role, ['lecturer', 'admin'])) {
+        if (!in_array($role, ['lecturer', 'admin'], true)) {
             Auth::logout();
 
             return back()->withErrors([
@@ -84,6 +108,12 @@ class AuthController extends Controller
         }
 
         $request->session()->regenerate();
+
+        ActivityLogger::log(
+            'login',
+            Auth::user(),
+            'User logged in through the lecturer login portal.'
+        );
 
         if ($role === 'admin') {
             return redirect()->route('dashboard');
@@ -111,7 +141,7 @@ class AuthController extends Controller
 
         $input = trim($request->reg_no);
 
-        // Allow login using either registration number or email.
+        // Allow login using registration number or email.
         $email = $input;
 
         if (!filter_var($input, FILTER_VALIDATE_EMAIL)) {
@@ -135,7 +165,15 @@ class AuthController extends Controller
             ]);
         }
 
-        // Only student accounts can access the student login.
+        // Block inactive accounts.
+        if (!Auth::user()->is_active) {
+            Auth::logout();
+
+            return back()->withErrors([
+                'reg_no' => 'Your account has been deactivated. Contact the system administrator.'
+            ]);
+        }
+
         if (Auth::user()->role !== 'student') {
             Auth::logout();
 
@@ -145,6 +183,12 @@ class AuthController extends Controller
         }
 
         $request->session()->regenerate();
+
+        ActivityLogger::log(
+            'login',
+            Auth::user(),
+            'Student logged in through the student portal.'
+        );
 
         return redirect()->route('student.dashboard');
     }
@@ -156,10 +200,17 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        if (Auth::check()) {
+            ActivityLogger::log(
+                'logout',
+                Auth::user(),
+                'User logged out successfully.'
+            );
+        }
+
         Auth::logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
         return redirect()->route('login')

@@ -11,6 +11,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LecturerDashboardController;
 use App\Http\Controllers\StudentPortalController;
+use App\Http\Controllers\ActivityLogController;
 
 use App\Models\Student;
 use App\Models\Course;
@@ -95,26 +96,55 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     })->name('dashboard');
 
-    // Admin user and account management
-Route::get('/admin/users', [AdminUserController::class, 'index'])
-    ->name('admin.users.index');
 
-Route::get('/admin/users/create', [AdminUserController::class, 'create'])
-    ->name('admin.users.create');
-
-Route::post('/admin/users', [AdminUserController::class, 'store'])
-    ->name('admin.users.store');
+    Route::get('/admin/activity-logs', [ActivityLogController::class, 'index'])
+    ->name('admin.activity-logs.index');
 
 
-    // Student CRUD
+    // ==========================================
+    // ADMIN USER AND ACCOUNT MANAGEMENT
+    // ==========================================
+
+    Route::get('/admin/users', [AdminUserController::class, 'index'])
+        ->name('admin.users.index');
+
+    Route::get('/admin/users/create', [AdminUserController::class, 'create'])
+        ->name('admin.users.create');
+
+    Route::post('/admin/users', [AdminUserController::class, 'store'])
+        ->name('admin.users.store');
+
+    // Edit user account
+    Route::get('/admin/users/{user}/edit', [AdminUserController::class, 'edit'])
+        ->name('admin.users.edit');
+
+    // Update user account
+    Route::put('/admin/users/{user}', [AdminUserController::class, 'update'])
+        ->name('admin.users.update');
+
+    // Activate or deactivate user account
+    Route::patch('/admin/users/{user}/status', [AdminUserController::class, 'toggleStatus'])
+        ->name('admin.users.status');
+
+
+    // ==========================================
+    // STUDENT CRUD
+    // ==========================================
+
     Route::resource('students', StudentController::class);
 
 
-    // Course CRUD
+    // ==========================================
+    // COURSE CRUD
+    // ==========================================
+
     Route::resource('courses', CourseController::class);
 
 
-    // General Course Registration
+    // ==========================================
+    // GENERAL COURSE REGISTRATION
+    // ==========================================
+
     Route::get('/registration', function () {
 
         $students = Student::orderBy('full_name')->get();
@@ -125,7 +155,10 @@ Route::post('/admin/users', [AdminUserController::class, 'store'])
     })->name('registration');
 
 
-    // Registration Management
+    // ==========================================
+    // REGISTRATION MANAGEMENT
+    // ==========================================
+
     Route::post('/registrations', [RegistrationController::class, 'store'])
         ->name('registrations.store');
 
@@ -142,8 +175,9 @@ Route::post('/admin/users', [AdminUserController::class, 'store'])
         ->name('registrations.destroy');
 
 
-    // Question 1(c): Eloquent Query Demonstration
-    // Only authenticated administrators can access these queries.
+    // ==========================================
+    // ELOQUENT QUERY DEMONSTRATION
+    // ==========================================
 
     Route::get('/student-courses', [QueryController::class, 'studentCourses'])
         ->name('student-courses');

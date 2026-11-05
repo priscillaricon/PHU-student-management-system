@@ -14,6 +14,7 @@ class CourseController extends Controller
         $courses = Course::with('lecturer')
             ->orderBy('course_code')
             ->paginate(10);
+            
 
         return view('courses.index', compact('courses'));
     }
@@ -32,20 +33,20 @@ class CourseController extends Controller
             'course_name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'credit_units' => ['required', 'integer', 'min:1'],
-            'lecturer_id' => ['required', 'exists:lecturers,id'],
+            'lecturer_id' => ['required', 'exists:lecturers,id'], 
         ]);
 
         Course::create($validated);
 
         return redirect()->route('courses.index')
-            ->with('success', 'Course added successfully.');
-    }
+            ->with('success', 'Course added successfully.');      
+    }    
 
-    public function show(Course $course)
+    public function show(Course $course)    
     {
-        $course->load('lecturer');
+        $course->load('lecturer');       
 
-        return view('courses.show', compact('course'));
+        return view('courses.show', compact('course'));     
     }
 
     public function edit(Course $course)
@@ -53,16 +54,16 @@ class CourseController extends Controller
         $lecturers = Lecturer::orderBy('full_name')->get();
 
         return view('courses.edit', compact('course', 'lecturers'));
-    }
+    } 
 
     public function update(Request $request, Course $course)
     {
         $validated = $request->validate([
-            'course_code' => [
+            'course_code' => [ 
                 'required', 'string', 'max:255',
-                Rule::unique('courses', 'course_code')->ignore($course->id),
+                Rule::unique('courses', 'course_code')->ignore($course->id),                     
             ],
-            'course_name' => ['required', 'string', 'max:255'],
+            'course_name' => ['required', 'string', 'max:255'],  
             'description' => ['nullable', 'string'],
             'credit_units' => ['required', 'integer', 'min:1'],
             'lecturer_id' => ['required', 'exists:lecturers,id'],

@@ -2,63 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Lecturer;
 use Illuminate\Http\Request;
 
 class LecturerController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display the lecturers directory.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-    }
+        $lecturers = Lecturer::query()
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = $request->search;
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+                $query->where('full_name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('department', 'like', "%{$search}%");
+            })
+            ->orderBy('full_name')
+            ->paginate(10)
+            ->withQueryString();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return view('lecturers.index', compact('lecturers'));
     }
 }

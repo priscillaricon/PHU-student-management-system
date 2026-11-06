@@ -9,9 +9,11 @@ use App\Http\Controllers\QueryController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\LecturerController;
 use App\Http\Controllers\LecturerDashboardController;
 use App\Http\Controllers\StudentPortalController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\LecturerCourseController;
 
 use App\Models\Student;
 use App\Models\Course;
@@ -68,7 +70,7 @@ Route::get('/course', function () {
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
 
-    // Admin Dashboard
+    // ADMIN DASHBOARD
     Route::get('/dashboard', function () {
 
         $totalStudents = Student::count();
@@ -97,14 +99,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     })->name('dashboard');
 
 
+    // ACTIVITY LOGS
     Route::get('/admin/activity-logs', [ActivityLogController::class, 'index'])
-    ->name('admin.activity-logs.index');
+        ->name('admin.activity-logs.index');
 
 
-    // ==========================================
-    // ADMIN USER AND ACCOUNT MANAGEMENT
-    // ==========================================
-
+    // ADMIN USER MANAGEMENT
     Route::get('/admin/users', [AdminUserController::class, 'index'])
         ->name('admin.users.index');
 
@@ -114,37 +114,30 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/users', [AdminUserController::class, 'store'])
         ->name('admin.users.store');
 
-    // Edit user account
     Route::get('/admin/users/{user}/edit', [AdminUserController::class, 'edit'])
         ->name('admin.users.edit');
 
-    // Update user account
     Route::put('/admin/users/{user}', [AdminUserController::class, 'update'])
         ->name('admin.users.update');
 
-    // Activate or deactivate user account
     Route::patch('/admin/users/{user}/status', [AdminUserController::class, 'toggleStatus'])
         ->name('admin.users.status');
 
 
-    // ==========================================
     // STUDENT CRUD
-    // ==========================================
-
     Route::resource('students', StudentController::class);
 
 
-    // ==========================================
-    // COURSE CRUD
-    // ==========================================
-
+    // ADMIN COURSE CRUD
     Route::resource('courses', CourseController::class);
 
 
-    // ==========================================
-    // GENERAL COURSE REGISTRATION
-    // ==========================================
+    // LECTURERS DIRECTORY
+    Route::get('/lecturers', [LecturerController::class, 'index'])
+        ->name('lecturers.index');
 
+
+    // GENERAL COURSE REGISTRATION
     Route::get('/registration', function () {
 
         $students = Student::orderBy('full_name')->get();
@@ -155,10 +148,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     })->name('registration');
 
 
-    // ==========================================
     // REGISTRATION MANAGEMENT
-    // ==========================================
-
     Route::post('/registrations', [RegistrationController::class, 'store'])
         ->name('registrations.store');
 
@@ -175,10 +165,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         ->name('registrations.destroy');
 
 
-    // ==========================================
     // ELOQUENT QUERY DEMONSTRATION
-    // ==========================================
-
     Route::get('/student-courses', [QueryController::class, 'studentCourses'])
         ->name('student-courses');
 
@@ -189,13 +176,34 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 
 // ==========================================
-// LECTURER PROTECTED ROUTES
+// LECTURER DASHBOARD
 // ==========================================
 
 Route::middleware(['auth', 'role:lecturer,admin'])->group(function () {
 
     Route::get('/lecturer-dashboard', [LecturerDashboardController::class, 'index'])
         ->name('lecturer-dashboard');
+
+});
+
+
+// ==========================================
+// LECTURER COURSE MANAGEMENT
+// ==========================================
+
+Route::middleware(['auth', 'role:lecturer'])->group(function () {
+
+    Route::get('/lecturer/courses', [LecturerCourseController::class, 'index'])
+        ->name('lecturer.courses.index');
+
+    Route::get('/lecturer/courses/{course}', [LecturerCourseController::class, 'show'])
+        ->name('lecturer.courses.show');
+
+    Route::get('/lecturer/courses/{course}/edit', [LecturerCourseController::class, 'edit'])
+        ->name('lecturer.courses.edit');
+
+    Route::put('/lecturer/courses/{course}', [LecturerCourseController::class, 'update'])
+        ->name('lecturer.courses.update');
 
 });
 
